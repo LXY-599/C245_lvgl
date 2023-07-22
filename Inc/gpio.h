@@ -33,7 +33,9 @@ extern "C" {
 /* USER CODE END Includes */
 
 /* USER CODE BEGIN Private defines */
-
+#define EC11_KEY_PIN    GPIO_PIN_15
+#define SHAKE_PIN       GPIO_PIN_14
+#define REED_SW_PIN     GPIO_PIN_13
 /* USER CODE END Private defines */
 
 void MX_GPIO_Init(void);

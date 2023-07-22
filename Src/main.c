@@ -30,7 +30,7 @@
 #include "lv_port_disp.h"
 #include "lcd.h"
 #include "lv_port_indev.h"
-
+#include "ui/ui.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -107,8 +107,8 @@ int main(void)
     lv_port_disp_init();
     lv_port_indev_init();
     //    HAL_TIM_PWM_Start(&htim17, TIM_CHANNEL_1);
-    lv_obj_t *text_obj = lv_label_create(lv_scr_act());
-
+    // lv_obj_t *text_obj = lv_label_create(lv_scr_act());
+    ui_init();
     /* USER CODE END 2 */
 
     /* Infinite loop */
@@ -117,8 +117,8 @@ int main(void)
     {
         HAL_Delay(5);
         lv_timer_handler();
-        sprintf(tft_str, "count = %d, diff = %d\r\n", ec11_data.count, ec11_data.diff);
-        lv_label_set_text(text_obj, tft_str);
+        // sprintf(tft_str, "count = %d, diff = %d\r\n", ec11_data.count, ec11_data.diff);
+        // lv_label_set_text(text_obj, tft_str);
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */

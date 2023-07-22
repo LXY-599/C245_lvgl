@@ -42,10 +42,10 @@ ec11_data_t ec11_data;
 
 static void encoder_init(void);
 static void encoder_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data);
-static void encoder_handler(void);
+// static void encoder_handler(void);
 
 // static void button_init(void);
-// static void button_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data);
+// static void button_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data);
 // static int8_t button_get_pressed_id(void);
 // static bool button_is_pressed(uint8_t id);
 
@@ -56,10 +56,13 @@ static void encoder_handler(void);
 // lv_indev_t * indev_mouse;
 // lv_indev_t * indev_keypad;
 lv_indev_t *indev_encoder;
-// lv_indev_t * indev_button;
+// lv_indev_t *indev_button;
 
-static int32_t encoder_diff;
+// static int32_t encoder_diff;
 static lv_indev_state_t encoder_state;
+lv_event_code_t ec11_event_code;
+
+lv_group_t *ec11_group;
 
 /**********************
  *      MACROS
@@ -147,6 +150,10 @@ void lv_port_indev_init(void)
     indev_drv.read_cb = encoder_read;
     indev_encoder = lv_indev_drv_register(&indev_drv);
 
+    ec11_group = lv_group_create();
+    lv_group_set_default(ec11_group);
+    lv_indev_set_group(indev_encoder, ec11_group);
+
     /*Later you should create group(s) with `lv_group_t * group = lv_group_create()`,
      *add objects to the group with `lv_group_add_obj(group, obj)`
      *and assign this input device to group to navigate in it:
@@ -157,20 +164,20 @@ void lv_port_indev_init(void)
      * -----------------*/
 
     /*Initialize your button if you have*/
-    //    button_init();
+    // button_init();
 
-    //    /*Register a button input device*/
-    //    lv_indev_drv_init(&indev_drv);
-    //    indev_drv.type = LV_INDEV_TYPE_BUTTON;
-    //    indev_drv.read_cb = button_read;
-    //    indev_button = lv_indev_drv_register(&indev_drv);
+    // /*Register a button input device*/
+    // lv_indev_drv_init(&indev_drv);
+    // indev_drv.type = LV_INDEV_TYPE_BUTTON;
+    // indev_drv.read_cb = button_read;
+    // indev_button = lv_indev_drv_register(&indev_drv);
 
-    //    /*Assign buttons to points on the screen*/
-    //    static const lv_point_t btn_points[2] = {
-    //        {10, 10},   /*Button 0 -> x:10; y:10*/
-    //        {40, 100},  /*Button 1 -> x:40; y:100*/
-    //    };
-    //    lv_indev_set_button_points(indev_button, btn_points);
+    // /*Assign buttons to points on the screen*/
+    // static const lv_point_t btn_points[2] = {
+    //     {10, 10},  /*Button 0 -> x:10; y:10*/
+    //     {40, 100}, /*Button 1 -> x:40; y:100*/
+    // };
+    // lv_indev_set_button_points(indev_button, btn_points);
 }
 
 ///**********************
@@ -342,16 +349,43 @@ static void encoder_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
     // data->enc_diff = encoder_diff;
     // data->state = encoder_state;
     data->enc_diff = ec11_data.diff;
-    data->state = encoder_state;
+    ec11_data.diff = 0;
+    // data->state = ec11_data.state;
 }
 
 /*Call this function in an interrupt to process encoder events (turn, press)*/
-static void encoder_handler(void)
-{
-    /*Your code comes here*/
+// static void encoder_handler(void)
+// {
+//     /*Your code comes here*/
 
-    encoder_diff += 0;
-    encoder_state = LV_INDEV_STATE_REL;
+//     encoder_diff += 0;
+//     encoder_state = LV_INDEV_STATE_REL;
+// }
+
+static void event_cb(lv_event_t *e)
+{
+    LV_LOG_USER("Clicked");
+
+    // static uint32_t cnt = 1;
+    lv_obj_t *btn = lv_event_get_target(e);
+    // lv_obj_t *label = lv_obj_get_child(btn, 0);
+    // lv_label_set_text_fmt(label, "%" LV_PRIu32, cnt);
+    // cnt++;
+}
+
+/**
+ * Add click event to a button
+ */
+void lv_example_event_1(void)
+{
+    lv_obj_t *btn = lv_btn_create(lv_scr_act());
+    // lv_obj_set_size(btn, 100, 50);
+    // lv_obj_center(btn);
+    lv_obj_add_event_cb(btn, event_cb, LV_EVENT_CLICKED, NULL);
+
+    lv_obj_t *label = lv_label_create(btn);
+    // lv_label_set_text(label, "Click me!");
+    // lv_obj_center(label);
 }
 
 /*------------------
@@ -360,56 +394,60 @@ static void encoder_handler(void)
 
 /*Initialize your buttons*/
 // static void button_init(void)
-//{
+// {
 //     /*Your code comes here*/
 // }
 
-///*Will be called by the library to read the button*/
-// static void button_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data)
-//{
+// /*Will be called by the library to read the button*/
+// static void button_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
+// {
 
-//    static uint8_t last_btn = 0;
+//     static uint8_t last_btn = 0;
 
-//    /*Get the pressed button's ID*/
-//    int8_t btn_act = button_get_pressed_id();
+//     /*Get the pressed button's ID*/
+//     int8_t btn_act = button_get_pressed_id();
 
-//    if(btn_act >= 0) {
-//        data->state = LV_INDEV_STATE_PR;
-//        last_btn = btn_act;
-//    }
-//    else {
-//        data->state = LV_INDEV_STATE_REL;
-//    }
+//     if (btn_act >= 0)
+//     {
+//         data->state = LV_INDEV_STATE_PR;
+//         last_btn = btn_act;
+//     }
+//     else
+//     {
+//         data->state = LV_INDEV_STATE_REL;
+//     }
 
-//    /*Save the last pressed button's ID*/
-//    data->btn_id = last_btn;
-//}
+//     /*Save the last pressed button's ID*/
+//     data->btn_id = last_btn;
+// }
 
-///*Get ID  (0, 1, 2 ..) of the pressed button*/
+// /*Get ID  (0, 1, 2 ..) of the pressed button*/
 // static int8_t button_get_pressed_id(void)
-//{
+// {
 //     uint8_t i;
 
-//    /*Check to buttons see which is being pressed (assume there are 2 buttons)*/
-//    for(i = 0; i < 2; i++) {
-//        /*Return the pressed button's ID*/
-//        if(button_is_pressed(i)) {
-//            return i;
-//        }
-//    }
+//     /*Check to buttons see which is being pressed (assume there are 2 buttons)*/
+//     for (i = 0; i < 2; i++)
+//     {
+//         /*Return the pressed button's ID*/
+//         if (button_is_pressed(i))
+//         {
+//             return i;
+//         }
+//     }
 
-//    /*No button pressed*/
-//    return -1;
-//}
+//     /*No button pressed*/
+//     return -1;
+// }
 
-///*Test if `id` button is pressed or not*/
+// /*Test if `id` button is pressed or not*/
 // static bool button_is_pressed(uint8_t id)
-//{
+// {
 
-//    /*Your code comes here*/
+//     /*Your code comes here*/
 
-//    return false;
-//}
+//     return false;
+// }
 
 #else /*Enable this file at the top*/
 

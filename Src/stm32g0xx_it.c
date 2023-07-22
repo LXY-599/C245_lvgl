@@ -22,7 +22,8 @@
 #include "stm32g0xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "gpio.h"
+#include "tim.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -247,5 +248,12 @@ void USART1_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
-
+void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
+{
+    if (GPIO_Pin == EC11_KEY_PIN)
+    {
+        __HAL_TIM_SET_AUTORELOAD(&htim1, 10);
+        HAL_TIM_Base_Start_IT(&htim1);
+    }
+}
 /* USER CODE END 1 */
